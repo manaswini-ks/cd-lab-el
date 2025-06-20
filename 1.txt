@@ -1,0 +1,64 @@
+A.
+
+%{
+#include<stdio.h>
+int lines=0,chars=0,words=0,spaces=0;
+%}
+%%
+\n	{lines++;} 
+\t	{spaces+=4;}
+[ ]	{spaces++;}
+[^ \t\n#]+ {words++;chars+=yyleng;} //[^ \t\n#] not space, tab, line, #
+# {return 0;}
+%%
+int yywrap()
+{
+	return 1;
+}
+int main()
+{
+	printf("Enter the string:\n");
+	yylex();
+	printf("Lines: %d\nWords: %d\nChars: %d\nSpaces: %d\n",lines,words,chars,spaces);
+	return 0;
+}
+	
+B.
+
+lex.l
+%{
+#include "y.tab.h"
+%}
+%%
+"a"	{return 'a';}
+"b"	{return 'b';}
+.	{return yytext[0];}
+\n	{return 0;}
+%%
+
+%{
+#include<stdio.h>
+#include<stdlib.h>
+%}
+%%
+S:A B
+;
+A:'a'A'b'
+|
+;
+B:'b'B'c'
+|
+;
+%%
+int main()
+{
+	printf("Enter the input:\n");
+	yyparse();
+	printf("Valid string\n");
+}
+int yyerror()
+{
+	printf("Invalid string\n");
+	exit(0);
+	
+}

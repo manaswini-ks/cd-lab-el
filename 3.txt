@@ -1,0 +1,84 @@
+A. 
+%{
+	#include<stdio.h>
+	int single=0,multi=0,mlines=0;
+%}
+%%
+"//"[^\n]*	{single++;}
+"/*"[^*]*"*/"	{
+	multi++;
+	for(int i=0;i<yyleng;i++)
+	{
+		if(yytext[i]=='\n')
+			mlines++;
+	}
+}
+%%
+int yywrap()
+{
+	return 1;
+}
+int main()
+{
+	yyin=fopen("inp.txt","r");
+	yyout=fopen("out.txt","w");
+	yylex();
+	printf("Single: %d\n Multi: %d\nMlines: %d\n",single,multi,mlines);
+	return 0;
+}
+
+B. 
+lex.l 
+%{
+	#include "y.tab.h"
+%}
+%%
+"for" return FOR;
+[a-zA-Z]* return IDEN;
+[0-9]+ return NUM;
+[\n ]  ;
+.   return yytext[0];
+%%
+
+yaac.y
+%{
+	#include<stdio.h>
+	#include<stdlib.h>
+	int cnt=0;
+%}
+%token FOR IDEN NUM
+%%
+S:I
+;
+I:FOR A B	{cnt++;}
+;
+A:'('E';'E';'E')'
+;
+E:IDEN Z IDEN
+|IDEN Z NUM
+|IDEN U
+|IDEN
+;
+Z:'='|'>'|'<'|'<''='|'>''='|'=''+'|'=''-'
+;
+U:'+''+'|'-''-' 
+;
+B:B B
+|'{' B '}'
+|I
+|E';'
+|
+;
+%%
+int main()
+{
+	printf("Enter the snippet:\n");
+	yyparse();
+	printf("Count of for : %d\n",cnt);
+	return 0;
+}
+int yyerror()
+{
+	printf("Invalid\n");
+	exit(0);
+}

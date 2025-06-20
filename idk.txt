@@ -1,0 +1,11 @@
+lex
+vi filename.l (gedit also maybe)
+lex filename.l
+cc lex.yy.c -ll
+./a.out
+
+
+yaac
+yacc -d trial.yaac
+cc lex.yy.c y.tab.c - ll
+./a.out
